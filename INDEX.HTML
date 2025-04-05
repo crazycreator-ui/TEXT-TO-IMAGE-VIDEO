@@ -3,521 +3,436 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text-to-Image/Video Generator</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem;
-        }
-        
-        .container {
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 900px;
-            padding: 2rem;
-            text-align: center;
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 1rem;
-            font-size: 2.2rem;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-        
-        .input-container {
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 10px;
-        }
-        
-        input {
-            flex: 1;
-            padding: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus {
-            border-color: #764ba2;
-        }
-        
-        button {
-            background: linear-gradient(to right, #764ba2, #667eea);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-        }
-        
-        button:active {
-            transform: translateY(0);
-            opacity: 0.9;
-        }
-        
-        .options {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .option-button {
-            background: #f5f5f5;
-            color: #333;
-            border: 2px solid #ddd;
-            border-radius: 20px;
-            padding: 0.5rem 1.5rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .option-button.active {
-            background: #764ba2;
-            color: white;
-            border-color: #764ba2;
-        }
-        
-        .result-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 2rem;
-        }
-        
-        .placeholder-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            background-color: #f5f5f5;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .placeholder-container img, .placeholder-container video {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-        
-        .loading {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.7);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-        
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #764ba2;
-            border-radius: 50%;
-            animation: spin 1.5s linear infinite;
-            margin-bottom: 1rem;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .prompt-text {
-            font-style: italic;
-            color: #666;
-            margin: 1rem 0;
-        }
-        
-        .history-container {
-            margin-top: 3rem;
-            width: 100%;
-        }
-        
-        .history-title {
-            text-align: left;
-            margin-bottom: 1rem;
-            color: #333;
-            font-size: 1.5rem;
-        }
-        
-        .history-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-        
-        .history-item {
-            cursor: pointer;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
-        
-        .history-item:hover {
-            transform: scale(1.03);
-        }
-        
-        .history-item img, .history-item video {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-        
-        .history-caption {
-            padding: 0.5rem;
-            background-color: #f5f5f5;
-            font-size: 0.9rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-    </style>
+    <meta name="description" content="Transform text into stunning AI-generated images and videos instantly. Create unique visuals for social media, marketing, and creative projects with our powerful AI generator.">
+    <meta name="keywords" content="AI image generator, text to video, AI art creator, image from text, video from text, AI visual generator">
+    <title>ImagiGen AI | Text-to-Image & Video Generator | Create AI Art in Seconds</title>
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="ImagiGen AI | Create Stunning AI Art & Videos from Text">
+    <meta property="og:description" content="Transform your ideas into visual masterpieces with our AI-powered text-to-image and video generator.">
+    <meta property="og:image" content="https://yourdomain.com/assets/social-preview.jpg">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta name="twitter:card" content="summary_large_image">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://yourdomain.com">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Text-to-Image/Video Generator</h1>
-        <p class="subtitle">Enter a prompt below to generate images or videos</p>
-        
-        <div class="options">
-            <button class="option-button active" id="image-option">Generate Image</button>
-            <button class="option-button" id="video-option">Generate Video</button>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="assets/imagigen-logo.svg" alt="ImagiGen AI Logo" width="180" height="40">
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#examples">Examples</a>
+                <a href="#pricing">Pricing</a>
+                <a href="blog/">Blog</a>
+                <a href="#contact">Contact</a>
+                <button class="btn-primary">Try Now</button>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
         </div>
-        
-        <div class="input-container">
-            <input type="text" id="prompt-input" placeholder="Describe what you want to generate...">
-            <button id="generate-btn">Generate</button>
-        </div>
-        
-        <div class="result-container">
-            <div class="placeholder-container" id="placeholder-container">
-                <div id="result-display" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f0f0f0; color: #666; font-size: 1.2rem;">
-                    Generated content will appear here
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Transform Text into Stunning AI Images & Videos</h1>
+                <p class="subtitle">Create unique visuals in seconds with our powerful AI generator. Perfect for social media, marketing, and creative projects.</p>
+                <div class="cta-buttons">
+                    <button class="btn-primary">Generate Images Now</button>
+                    <button class="btn-secondary">Create AI Videos</button>
                 </div>
-                <div class="loading" style="display: none;">
-                    <div class="loading-spinner"></div>
-                    <p>Generating your content...</p>
+                <div class="trust-badges">
+                    <img src="assets/trustpilot-stars.png" alt="4.9/5 Stars on TrustPilot" width="120">
+                    <span>10,000+ happy creators</span>
                 </div>
             </div>
-            <p class="prompt-text" id="current-prompt">Your generated image or video will appear here</p>
-        </div>
-        
-        <div class="history-container">
-            <h2 class="history-title">Generation History</h2>
-            <div class="history-grid" id="history-grid">
-                <!-- History items will be added here -->
+            <div class="hero-image">
+                <img src="assets/hero-demo.gif" alt="AI image and video generation demo" width="600" height="400" loading="lazy">
             </div>
         </div>
-    </div>
-    
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Powerful AI Generation Features</h2>
+            <p class="section-subtitle">Everything you need to bring your ideas to life</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/icon-image-gen.svg" alt="Image generation icon" width="60" height="60">
+                    </div>
+                    <h3>Text-to-Image</h3>
+                    <p>Generate high-quality images from text descriptions with multiple art styles to choose from.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/icon-video-gen.svg" alt="Video generation icon" width="60" height="60">
+                    </div>
+                    <h3>Text-to-Video</h3>
+                    <p>Create short video clips from text prompts with smooth animations and transitions.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/icon-styles.svg" alt="Art styles icon" width="60" height="60">
+                    </div>
+                    <h3>Multiple Art Styles</h3>
+                    <p>Choose from photorealism, anime, watercolor, cyberpunk, and 20+ other styles.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/icon-hd.svg" alt="HD quality icon" width="60" height="60">
+                    </div>
+                    <h3>HD & 4K Output</h3>
+                    <p>Download your creations in high resolution suitable for printing and professional use.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/icon-batch.svg" alt="Batch processing icon" width="60" height="60">
+                    </div>
+                    <h3>Batch Processing</h3>
+                    <p>Generate multiple variations simultaneously to find the perfect result.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/icon-api.svg" alt="API icon" width="60" height="60">
+                    </div>
+                    <h3>API Access</h3>
+                    <p>Integrate our AI generator directly into your applications and workflows.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <p class="section-subtitle">Create amazing AI art in just 3 simple steps</p>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Describe Your Vision</h3>
+                        <p>Enter a text description of what you want to create. Be as detailed as possible for best results.</p>
+                        <img src="assets/step1-demo.png" alt="Text input example" width="400" height="250" loading="lazy">
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Customize Settings</h3>
+                        <p>Select your preferred art style, aspect ratio, and other parameters.</p>
+                        <img src="assets/step2-demo.png" alt="Settings customization example" width="400" height="250" loading="lazy">
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Generate & Download</h3>
+                        <p>Click generate and watch as our AI brings your idea to life in seconds.</p>
+                        <img src="assets/step3-demo.gif" alt="Generation process example" width="400" height="250" loading="lazy">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="center">
+                <button class="btn-primary">Try It Now - No Signup Required</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Gallery -->
+    <section id="examples" class="examples">
+        <div class="container">
+            <h2>AI Generation Examples</h2>
+            <p class="section-subtitle">See what our AI can create from simple text prompts</p>
+            
+            <div class="gallery-tabs">
+                <button class="tab-btn active" data-category="all">All</button>
+                <button class="tab-btn" data-category="images">Images</button>
+                <button class="tab-btn" data-category="videos">Videos</button>
+                <button class="tab-btn" data-category="photorealistic">Photorealistic</button>
+                <button class="tab-btn" data-category="artistic">Artistic</button>
+            </div>
+            
+            <div class="gallery-grid">
+                <div class="gallery-item" data-category="images,photorealistic">
+                    <img src="assets/gallery/photo1.jpg" alt="AI generated photorealistic landscape" loading="lazy">
+                    <div class="gallery-overlay">
+                        <p>"A misty mountain valley at sunrise with a crystal clear lake reflecting the peaks"</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="images,artistic">
+                    <img src="assets/gallery/art1.jpg" alt="AI generated cyberpunk cityscape" loading="lazy">
+                    <div class="gallery-overlay">
+                        <p>"Cyberpunk neon city at night with flying cars and holographic advertisements"</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="videos,artistic">
+                    <video muted loop playsinline>
+                        <source src="assets/gallery/video1.mp4" type="video/mp4">
+                    </video>
+                    <div class="gallery-overlay">
+                        <p>"Animated watercolor painting of butterflies emerging from a book"</p>
+                    </div>
+                </div>
+                
+                <!-- More gallery items -->
+            </div>
+            
+            <div class="center">
+                <button class="btn-secondary">View More Examples</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2>Simple, Transparent Pricing</h2>
+            <p class="section-subtitle">Choose the plan that fits your creative needs</p>
+            
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3>Starter</h3>
+                    <div class="price">$9<span>/month</span></div>
+                    <ul class="features-list">
+                        <li>100 image generations/month</li>
+                        <li>10 video generations/month</li>
+                        <li>Standard resolution (1080p)</li>
+                        <li>5 art styles</li>
+                        <li>Commercial license</li>
+                    </ul>
+                    <button class="btn-outline">Get Started</button>
+                </div>
+                
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <h3>Pro</h3>
+                    <div class="price">$29<span>/month</span></div>
+                    <ul class="features-list">
+                        <li>500 image generations/month</li>
+                        <li>50 video generations/month</li>
+                        <li>High resolution (4K)</li>
+                        <li>All art styles</li>
+                        <li>Priority generation</li>
+                        <li>Commercial license</li>
+                    </ul>
+                    <button class="btn-primary">Choose Pro</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">Custom</div>
+                    <ul class="features-list">
+                        <li>Unlimited generations</li>
+                        <li>Dedicated servers</li>
+                        <li>API access</li>
+                        <li>Team collaboration</li>
+                        <li>White-label options</li>
+                        <li>Premium support</li>
+                    </ul>
+                    <button class="btn-outline">Contact Sales</button>
+                </div>
+            </div>
+            
+            <div class="pricing-footer">
+                <p>All plans include a 7-day free trial with no credit card required.</p>
+                <p>Need pay-as-you-go? Try our <a href="#credits">credit packs</a>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <h2>What Our Users Say</h2>
+            <p class="section-subtitle">Trusted by creators, marketers, and businesses worldwide</p>
+            
+            <div class="testimonial-slider">
+                <div class="testimonial">
+                    <div class="rating">★★★★★</div>
+                    <p>"This AI generator has completely transformed my content creation workflow. I can now produce unique visuals for my blog in minutes instead of hours."</p>
+                    <div class="author">
+                        <img src="assets/testimonials/sarah.jpg" alt="Sarah M." width="50" height="50" loading="lazy">
+                        <div>
+                            <strong>Sarah M.</strong>
+                            <span>Content Creator</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="rating">★★★★★</div>
+                    <p>"As a small business owner, I can't afford professional designers. ImagiGen AI lets me create stunning marketing materials at a fraction of the cost."</p>
+                    <div class="author">
+                        <img src="assets/testimonials/james.jpg" alt="James T." width="50" height="50" loading="lazy">
+                        <div>
+                            <strong>James T.</strong>
+                            <span>Small Business Owner</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="rating">★★★★☆</div>
+                    <p>"The video generation feature is revolutionary for our social media team. We've increased engagement by 40% with these unique AI visuals."</p>
+                    <div class="author">
+                        <img src="assets/testimonials/priya.jpg" alt="Priya K." width="50" height="50" loading="lazy">
+                        <div>
+                            <strong>Priya K.</strong>
+                            <span>Social Media Manager</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Unleash Your Creativity?</h2>
+            <p class="subtitle">Join thousands of creators using ImagiGen AI to bring their ideas to life</p>
+            <div class="cta-buttons">
+                <button class="btn-primary">Start Free Trial</button>
+                <button class="btn-secondary">See Live Demo</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <img src="assets/imagigen-logo-white.svg" alt="ImagiGen AI" width="160" height="35">
+                    <p>Powerful AI tools for visual creators. Transform text into stunning images and videos in seconds.</p>
+                    <div class="social-links">
+                        <a href="#"><img src="assets/social/twitter.svg" alt="Twitter" width="24" height="24"></a>
+                        <a href="#"><img src="assets/social/instagram.svg" alt="Instagram" width="24" height="24"></a>
+                        <a href="#"><img src="assets/social/facebook.svg" alt="Facebook" width="24" height="24"></a>
+                        <a href="#"><img src="assets/social/linkedin.svg" alt="LinkedIn" width="24" height="24"></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#examples">Examples</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="blog/">Blog</a></li>
+                        <li><a href="#">Updates</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Prompt Guide</a></li>
+                        <li><a href="#">Style Guide</a></li>
+                        <li><a href="#">Help Center</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2023 ImagiGen AI. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Cookie Policy</a>
+                    <a href="#">GDPR</a>
+                    <a href="#">Status</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/scripts.js"></script>
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "ImagiGen AI",
+        "description": "AI-powered text-to-image and video generator",
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "Web",
+        "offers": {
+            "@type": "Offer",
+            "price": "9.00",
+            "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "1243"
+        }
+    }
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const imageOption = document.getElementById('image-option');
-            const videoOption = document.getElementById('video-option');
-            const promptInput = document.getElementById('prompt-input');
-            const generateBtn = document.getElementById('generate-btn');
-            const resultDisplay = document.getElementById('result-display');
-            const currentPrompt = document.getElementById('current-prompt');
-            const loading = document.querySelector('.loading');
-            const historyGrid = document.getElementById('history-grid');
-            
-            let isGeneratingImage = true;
-            let generationHistory = [];
-            
-            // Option buttons
-            imageOption.addEventListener('click', function() {
-                imageOption.classList.add('active');
-                videoOption.classList.remove('active');
-                isGeneratingImage = true;
-            });
-            
-            videoOption.addEventListener('click', function() {
-                videoOption.classList.add('active');
-                imageOption.classList.remove('active');
-                isGeneratingImage = false;
-            });
-            
-            // Generate button
-            generateBtn.addEventListener('click', function() {
-                generateContent();
-            });
-            
-            // Enter key to generate
-            promptInput.addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    generateContent();
-                }
-            });
-            
-            function generateContent() {
-                const prompt = promptInput.value.trim();
-                if (!prompt) return;
-                
-                // Show loading
-                loading.style.display = 'flex';
-                
-                // Simulate generation delay (in a real app, this would be an API call)
-                setTimeout(() => {
-                    // For demo purposes, generate a random colored placeholder
-                    const colors = ['#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0', '#607d8b'];
-                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    if (isGeneratingImage) {
-                        // For demo, create a dynamically styled div instead of using placeholder API
-                    const placeholderContainer = document.getElementById('placeholder-container');
-                    
-                    // Create new element for the "generated" image
-                    const generatedContent = document.createElement('div');
-                    generatedContent.id = 'result-display';
-                    generatedContent.style.width = '100%';
-                    generatedContent.style.height = '100%';
-                    generatedContent.style.backgroundColor = randomColor;
-                    generatedContent.style.display = 'flex';
-                    generatedContent.style.alignItems = 'center';
-                    generatedContent.style.justifyContent = 'center';
-                    generatedContent.style.color = '#fff';
-                    generatedContent.style.fontWeight = 'bold';
-                    generatedContent.style.fontSize = '1.5rem';
-                    generatedContent.style.padding = '20px';
-                    generatedContent.style.textAlign = 'center';
-                    generatedContent.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)';
-                    generatedContent.textContent = prompt;
-                    
-                    // Replace old content
-                    placeholderContainer.querySelector('#result-display').replaceWith(generatedContent);
-                    resultDisplay = generatedContent;
-                        
-                        // In a real app, you would call an image generation API:
-                        // const response = await fetch('/api/generate-image', {
-                        //     method: 'POST',
-                        //     body: JSON.stringify({ prompt }),
-                        //     headers: { 'Content-Type': 'application/json' }
-                        // });
-                        // const data = await response.json();
-                        // resultDisplay.src = data.imageUrl;
-                    } else {
-                        // For demo, create a fake video placeholder
-                        const videoContainer = document.createElement('div');
-                        videoContainer.id = 'result-display';
-                        videoContainer.style.width = '100%';
-                        videoContainer.style.height = '100%';
-                        videoContainer.style.backgroundColor = randomColor;
-                        videoContainer.style.display = 'flex';
-                        videoContainer.style.flexDirection = 'column';
-                        videoContainer.style.alignItems = 'center';
-                        videoContainer.style.justifyContent = 'center';
-                        videoContainer.style.color = '#fff';
-                        videoContainer.style.padding = '20px';
-                        videoContainer.style.textAlign = 'center';
-                        
-                        // Add a play button icon
-                        const playIcon = document.createElement('div');
-                        playIcon.innerHTML = '▶️';
-                        playIcon.style.fontSize = '3rem';
-                        playIcon.style.marginBottom = '15px';
-                        
-                        // Add prompt text
-                        const promptText = document.createElement('div');
-                        promptText.textContent = prompt;
-                        promptText.style.fontWeight = 'bold';
-                        promptText.style.fontSize = '1.5rem';
-                        promptText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)';
-                        
-                        // Add video duration
-                        const duration = document.createElement('div');
-                        duration.textContent = '0:15';
-                        duration.style.marginTop = '10px';
-                        duration.style.opacity = '0.8';
-                        
-                        videoContainer.appendChild(playIcon);
-                        videoContainer.appendChild(promptText);
-                        videoContainer.appendChild(duration);
-                        
-                        // Replace old content
-                        resultDisplay.replaceWith(videoContainer);
-                        resultDisplay = videoContainer;
-                    }
-                    
-                    // Add to history
-                    addToHistory(prompt, isGeneratingImage, resultDisplay.src);
-                    
-                    // Update current prompt text
-                    currentPrompt.textContent = `"${prompt}"`;
-                    
-                    // Hide loading
-                    loading.style.display = 'none';
-                }, 2000);
-            }
-            
-            function addToHistory(prompt, isImage, url) {
-                // Create history item with color instead of URL
-                const colors = ['#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0', '#607d8b'];
-                const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                const historyItem = {
-                    prompt,
-                    isImage,
-                    color: randomColor,
-                    timestamp: new Date().getTime()
-                };
-                
-                // Add to history array
-                generationHistory.unshift(historyItem);
-                
-                // Limit history to 8 items
-                if (generationHistory.length > 8) {
-                    generationHistory.pop();
-                }
-                
-                // Update history display
-                updateHistoryDisplay();
-            }
-            
-            function updateHistoryDisplay() {
-                historyGrid.innerHTML = '';
-                
-                generationHistory.forEach(item => {
-                    const historyElement = document.createElement('div');
-                    historyElement.className = 'history-item';
-                    
-                    if (item.isImage) {
-                        historyElement.innerHTML = `
-                            <div style="height: 150px; background-color: ${item.color}; display: flex; align-items: center; justify-content: center; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); padding: 5px; text-align: center;">
-                                ${item.prompt}
-                            </div>
-                            <div class="history-caption">${item.prompt}</div>
-                        `;
-                    } else {
-                        historyElement.innerHTML = `
-                            <div style="height: 150px; background-color: ${item.color}; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); padding: 5px; text-align: center;">
-                                <span style="font-size: 24px; margin-bottom: 5px;">▶️</span>
-                                <span>${item.prompt}</span>
-                            </div>
-                            <div class="history-caption">${item.prompt}</div>
-                        `;
-                    }
-                    
-                    // Click to restore this generation
-                    historyElement.addEventListener('click', function() {
-                        promptInput.value = item.prompt;
-                        currentPrompt.textContent = `"${item.prompt}"`;
-                        
-                        const placeholderContainer = document.getElementById('placeholder-container');
-                        const colors = ['#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0', '#607d8b'];
-                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                        
-                        if (item.isImage) {
-                            // Create new element for the "generated" image
-                            const generatedContent = document.createElement('div');
-                            generatedContent.id = 'result-display';
-                            generatedContent.style.width = '100%';
-                            generatedContent.style.height = '100%';
-                            generatedContent.style.backgroundColor = item.color;
-                            generatedContent.style.display = 'flex';
-                            generatedContent.style.alignItems = 'center';
-                            generatedContent.style.justifyContent = 'center';
-                            generatedContent.style.color = '#fff';
-                            generatedContent.style.fontWeight = 'bold';
-                            generatedContent.style.fontSize = '1.5rem';
-                            generatedContent.style.padding = '20px';
-                            generatedContent.style.textAlign = 'center';
-                            generatedContent.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)';
-                            generatedContent.textContent = item.prompt;
-                            
-                            // Replace old content
-                            placeholderContainer.querySelector('#result-display').replaceWith(generatedContent);
-                            resultDisplay = generatedContent;
-                        } else {
-                            // Create a fake video placeholder
-                            const videoContainer = document.createElement('div');
-                            videoContainer.id = 'result-display';
-                            videoContainer.style.width = '100%';
-                            videoContainer.style.height = '100%';
-                            videoContainer.style.backgroundColor = item.color;
-                            videoContainer.style.display = 'flex';
-                            videoContainer.style.flexDirection = 'column';
-                            videoContainer.style.alignItems = 'center';
-                            videoContainer.style.justifyContent = 'center';
-                            videoContainer.style.color = '#fff';
-                            videoContainer.style.padding = '20px';
-                            videoContainer.style.textAlign = 'center';
-                            
-                            // Add a play button icon
-                            const playIcon = document.createElement('div');
-                            playIcon.innerHTML = '▶️';
-                            playIcon.style.fontSize = '3rem';
-                            playIcon.style.marginBottom = '15px';
-                            
-                            // Add prompt text
-                            const promptText = document.createElement('div');
-                            promptText.textContent = item.prompt;
-                            promptText.style.fontWeight = 'bold';
-                            promptText.style.fontSize = '1.5rem';
-                            promptText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)';
-                            
-                            // Add video duration
-                            const duration = document.createElement('div');
-                            duration.textContent = '0:15';
-                            duration.style.marginTop = '10px';
-                            duration.style.opacity = '0.8';
-                            
-                            videoContainer.appendChild(playIcon);
-                            videoContainer.appendChild(promptText);
-                            videoContainer.appendChild(duration);
-                            
-                            // Replace old content
-                            placeholderContainer.querySelector('#result-display').replaceWith(videoContainer);
-                            resultDisplay = videoContainer;
-                        }
-                    });
-                    
-                    historyGrid.appendChild(historyElement);
-                });
+    const API_KEY = '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'; // Replace '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' with your actual API key
+
+    // Example usage in a function that calls your API
+    async function generateImage(prompt) {
+        const response = await fetch('https://api.example.com/generate-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}` // Use the API key here
+            },
+            body: JSON.stringify({ prompt })
+        });
+        const data = await response.json();
+        return data.imageUrl;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const generateBtn = document.getElementById('generate-btn');
+        const promptInput = document.getElementById('prompt-input');
+        const resultDisplay = document.getElementById('result-display');
+
+        generateBtn.addEventListener('click', async function() {
+            const prompt = promptInput.value.trim();
+            if (prompt) {
+                const imageUrl = await generateImage(prompt);
+                resultDisplay.src = imageUrl;
             }
         });
-    </script>
+    });
+</script>
 </body>
 </html>
