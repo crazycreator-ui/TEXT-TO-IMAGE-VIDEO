@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Image/Video Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .input-container {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 10px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #764ba2;
+        }
+        
+        button {
+            background: linear-gradient(to right, #764ba2, #667eea);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            opacity: 0.9;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .option-button {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-button.active {
+            background: #764ba2;
+            color: white;
+            border-color: #764ba2;
+        }
+        
+        .result-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+        }
+        
+        .placeholder-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .placeholder-container img, .placeholder-container video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #764ba2;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .prompt-text {
+            font-style: italic;
+            color: #666;
+            margin: 1rem 0;
+        }
+        
+        .history-container {
+            margin-top: 3rem;
+            width: 100%;
+        }
+        
+        .history-title {
+            text-align: left;
+            margin-bottom: 1rem;
+            color: #333;
+            font-size: 1.5rem;
+        }
+        
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .history-item {
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        
+        .history-item:hover {
+            transform: scale(1.03);
+        }
+        
+        .history-item img, .history-item video {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .history-caption {
+            padding: 0.5rem;
+            background-color: #f5f5f5;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text-to-Image/Video Generator</h1>
+        <p class="subtitle">Enter a prompt below to generate images or videos</p>
+        
+        <div class="options">
+            <button class="option-button active" id="image-option">Generate Image</button>
+            <button class="option-button" id="video-option">Generate Video</button>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="prompt-input" placeholder="Describe what you want to generate...">
+            <button id="generate-btn">Generate</button>
+        </div>
+        
+        <div class="result-container">
+            <div class="placeholder-container" id="placeholder-container">
+                <div id="result-display" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f0f0f0; color: #666; font-size: 1.2rem;">
+                    Generated content will appear here
+                </div>
+                <div class="loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Generating your content...</p>
+                </div>
+            </div>
+            <p class="prompt-text" id="current-prompt">Your generated image or video will appear here</p>
+        </div>
+        
+        <div class="history-container">
+            <h2 class="history-title">Generation History</h2>
+            <div class="history-grid" id="history-grid">
+                <!-- History items will be added here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageOption = document.getElementById('image-option');
+            const videoOption = document.getElementById('video-option');
+            const promptInput = document.getElementById('prompt-input');
+            const generateBtn = document.getElementById('generate-btn');
+            const resultDisplay = document.getElementById('result-display');
+            const currentPrompt = document.getElementById('current-prompt');
+            const loading = document.querySelector('.loading');
+            const historyGrid = document.getElementById('history-grid');
+            
+            let isGeneratingImage = true;
+            let generationHistory = [];
+            
+            // Option buttons
+            imageOption.addEventListener('click', function() {
+                imageOption.classList.add('active');
+                videoOption.classList.remove('active');
+                isGeneratingImage = true;
+            });
+            
+            videoOption.addEventListener('click', function() {
+                videoOption.classList.add('active');
+                imageOption.classList.remove('active');
+                isGeneratingImage = false;
+            });
+            
+            // Generate button
+            generateBtn.addEventListener('click', function() {
+                generateContent();
+            });
+            
+            // Enter key to generate
+            promptInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    generateContent();
+                }
+            });
+            
+            function generateContent() {
+                const prompt = promptInput.value.trim();
+                if (!prompt) return;
+                
+                // Show loading
+                loading.style.display = 'flex';
+                
+                // Simulate generation delay (in a real app, this would be an API call)
+                setTimeout(() => {
+                    // For demo purposes, generate a random colored placeholder
+                    const colors = ['#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0', '#607d8b'];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    if (isGeneratingImage) {
+                        // For demo, create a dynamically styled div instead of using placeholder API
+                    const placeholderContainer = document.getElementById('placeholder-container');
+                    
+                    // Create new element for the "generated" image
+                    const generatedContent = document.createElement('div');
+                    generatedContent.id = 'result-display';
+                    generatedContent.style.width = '100%';
+                    generatedContent.style.height = '100%';
+                    generatedContent.style.backgroundColor = randomColor;
+                    generatedContent.style.display = 'flex';
+                    generatedContent.style.alignItems = 'center';
+                    generatedContent.style.justifyContent = 'center';
+                    generatedContent.style.color = '#fff';
+                    generatedContent.style.fontWeight = 'bold';
+                    generatedContent.style.fontSize = '1.5rem';
+                    generatedContent.style.padding = '20px';
+                    generatedContent.style.textAlign = 'center';
+                    generatedContent.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)';
+                    generatedContent.textContent = prompt;
+                    
+                    // Replace old content
+                    placeholderContainer.querySelector('#result-display').replaceWith(generatedContent);
+                    resultDisplay = generatedContent;
+                        
+                        // In a real app, you would call an image generation API:
+                        // const response = await fetch('/api/generate-image', {
+                        //     method: 'POST',
+                        //     body: JSON.stringify({ prompt }),
+                        //     headers: { 'Content-Type': 'application/json' }
+                        // });
+                        // const data = await response.json();
+                        // resultDisplay.src = data.imageUrl;
+                    } else {
+                        // For demo, create a fake video placeholder
+                        const videoContainer = document.createElement('div');
+                        videoContainer.id = 'result-display';
+                        videoContainer.style.width = '100%';
+                        videoContainer.style.height = '100%';
+                        videoContainer.style.backgroundColor = randomColor;
+                        videoContainer.style.display = 'flex';
+                        videoContainer.style.flexDirection = 'column';
+                        videoContainer.style.alignItems = 'center';
+                        videoContainer.style.justifyContent = 'center';
+                        videoContainer.style.color = '#fff';
+                        videoContainer.style.padding = '20px';
+                        videoContainer.style.textAlign = 'center';
+                        
+                        // Add a play button icon
+                        const playIcon = document.createElement('div');
+                        playIcon.innerHTML = '▶️';
+                        playIcon.style.fontSize = '3rem';
+                        playIcon.style.marginBottom = '15px';
+                        
+                        // Add prompt text
+                        const promptText = document.createElement('div');
+                        promptText.textContent = prompt;
+                        promptText.style.fontWeight = 'bold';
+                        promptText.style.fontSize = '1.5rem';
+                        promptText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)';
+                        
+                        // Add video duration
+                        const duration = document.createElement('div');
+                        duration.textContent = '0:15';
+                        duration.style.marginTop = '10px';
+                        duration.style.opacity = '0.8';
+                        
+                        videoContainer.appendChild(playIcon);
+                        videoContainer.appendChild(promptText);
+                        videoContainer.appendChild(duration);
+                        
+                        // Replace old content
+                        resultDisplay.replaceWith(videoContainer);
+                        resultDisplay = videoContainer;
+                    }
+                    
+                    // Add to history
+                    addToHistory(prompt, isGeneratingImage, resultDisplay.src);
+                    
+                    // Update current prompt text
+                    currentPrompt.textContent = `"${prompt}"`;
+                    
+                    // Hide loading
+                    loading.style.display = 'none';
+                }, 2000);
+            }
+            
+            function addToHistory(prompt, isImage, url) {
+                // Create history item with color instead of URL
+                const colors = ['#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0', '#607d8b'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                const historyItem = {
+                    prompt,
+                    isImage,
+                    color: randomColor,
+                    timestamp: new Date().getTime()
+                };
+                
+                // Add to history array
+                generationHistory.unshift(historyItem);
+                
+                // Limit history to 8 items
+                if (generationHistory.length > 8) {
+                    generationHistory.pop();
+                }
+                
+                // Update history display
+                updateHistoryDisplay();
+            }
+            
+            function updateHistoryDisplay() {
+                historyGrid.innerHTML = '';
+                
+                generationHistory.forEach(item => {
+                    const historyElement = document.createElement('div');
+                    historyElement.className = 'history-item';
+                    
+                    if (item.isImage) {
+                        historyElement.innerHTML = `
+                            <div style="height: 150px; background-color: ${item.color}; display: flex; align-items: center; justify-content: center; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); padding: 5px; text-align: center;">
+                                ${item.prompt}
+                            </div>
+                            <div class="history-caption">${item.prompt}</div>
+                        `;
+                    } else {
+                        historyElement.innerHTML = `
+                            <div style="height: 150px; background-color: ${item.color}; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); padding: 5px; text-align: center;">
+                                <span style="font-size: 24px; margin-bottom: 5px;">▶️</span>
+                                <span>${item.prompt}</span>
+                            </div>
+                            <div class="history-caption">${item.prompt}</div>
+                        `;
+                    }
+                    
+                    // Click to restore this generation
+                    historyElement.addEventListener('click', function() {
+                        promptInput.value = item.prompt;
+                        currentPrompt.textContent = `"${item.prompt}"`;
+                        
+                        const placeholderContainer = document.getElementById('placeholder-container');
+                        const colors = ['#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0', '#607d8b'];
+                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        if (item.isImage) {
+                            // Create new element for the "generated" image
+                            const generatedContent = document.createElement('div');
+                            generatedContent.id = 'result-display';
+                            generatedContent.style.width = '100%';
+                            generatedContent.style.height = '100%';
+                            generatedContent.style.backgroundColor = item.color;
+                            generatedContent.style.display = 'flex';
+                            generatedContent.style.alignItems = 'center';
+                            generatedContent.style.justifyContent = 'center';
+                            generatedContent.style.color = '#fff';
+                            generatedContent.style.fontWeight = 'bold';
+                            generatedContent.style.fontSize = '1.5rem';
+                            generatedContent.style.padding = '20px';
+                            generatedContent.style.textAlign = 'center';
+                            generatedContent.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)';
+                            generatedContent.textContent = item.prompt;
+                            
+                            // Replace old content
+                            placeholderContainer.querySelector('#result-display').replaceWith(generatedContent);
+                            resultDisplay = generatedContent;
+                        } else {
+                            // Create a fake video placeholder
+                            const videoContainer = document.createElement('div');
+                            videoContainer.id = 'result-display';
+                            videoContainer.style.width = '100%';
+                            videoContainer.style.height = '100%';
+                            videoContainer.style.backgroundColor = item.color;
+                            videoContainer.style.display = 'flex';
+                            videoContainer.style.flexDirection = 'column';
+                            videoContainer.style.alignItems = 'center';
+                            videoContainer.style.justifyContent = 'center';
+                            videoContainer.style.color = '#fff';
+                            videoContainer.style.padding = '20px';
+                            videoContainer.style.textAlign = 'center';
+                            
+                            // Add a play button icon
+                            const playIcon = document.createElement('div');
+                            playIcon.innerHTML = '▶️';
+                            playIcon.style.fontSize = '3rem';
+                            playIcon.style.marginBottom = '15px';
+                            
+                            // Add prompt text
+                            const promptText = document.createElement('div');
+                            promptText.textContent = item.prompt;
+                            promptText.style.fontWeight = 'bold';
+                            promptText.style.fontSize = '1.5rem';
+                            promptText.style.textShadow = '1px 1px 3px rgba(0,0,0,0.5)';
+                            
+                            // Add video duration
+                            const duration = document.createElement('div');
+                            duration.textContent = '0:15';
+                            duration.style.marginTop = '10px';
+                            duration.style.opacity = '0.8';
+                            
+                            videoContainer.appendChild(playIcon);
+                            videoContainer.appendChild(promptText);
+                            videoContainer.appendChild(duration);
+                            
+                            // Replace old content
+                            placeholderContainer.querySelector('#result-display').replaceWith(videoContainer);
+                            resultDisplay = videoContainer;
+                        }
+                    });
+                    
+                    historyGrid.appendChild(historyElement);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
