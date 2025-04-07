@@ -865,32 +865,48 @@ body {
             </div>
         </div>
     </footer>
+<script>
+    const API_KEY = 'AIzaSyCyCkuS10W02parmHHRapsekOW86qIJdqw'; // Replace 'AIzaSyCyCkuS10W02parmHHRapsekOW86qIJdqw' with your actual API key
 
-    <!-- Scripts -->
-    <script src="js/scripts.js"></script>
-    <!-- Schema Markup -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "ImagiGen AI",
-        "description": "AI-powered text-to-image and video generator",
-        "applicationCategory": "Multimedia",
-        "operatingSystem": "Web",
-        "offers": {
-            "@type": "Offer",
-            "price": "9.00",
-            "priceCurrency": "USD"
-        },
-        "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "reviewCount": "1243"
+    async function generateImage(prompt) {
+        try {
+            const response = await fetch('https://api.example.com/generate-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}` // Use the API key here
+                },
+                body: JSON.stringify({ prompt })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data.imageUrl;
+        } catch (error) {
+            console.error('Failed to generate image:', error);
+            alert('Failed to generate image. Please try again.');
         }
     }
-    <script>
-    const API_KEY = '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'; // Replace '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' with your actual API key
 
+    document.addEventListener('DOMContentLoaded', function() {
+        const generateBtn = document.getElementById('generate-btn');
+        const promptInput = document.getElementById('prompt-input');
+        const resultDisplay = document.getElementById('result-display');
+
+        generateBtn.addEventListener('click', async function() {
+            const prompt = promptInput.value.trim();
+            if (prompt) {
+                const imageUrl = await generateImage(prompt);
+                if (imageUrl) {
+                    resultDisplay.src = imageUrl;
+                }
+            }
+        });
+    });
+</script>
     // Example usage in a function that calls your API
     async function generateImage(prompt) {
         const response = await fetch('https://api.example.com/generate-image', {
