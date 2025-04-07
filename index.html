@@ -874,7 +874,7 @@ body {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}` // Use the API key here
+                    'Authorization': `Bearer ${AIzaSyCyCkuS10W02parmHHRapsekOW86qIJdqw}` // Use the API key here
                 },
                 body: JSON.stringify({ prompt })
             });
@@ -884,6 +884,7 @@ body {
             }
 
             const data = await response.json();
+            console.log('API Response:', data); // Log the API response for debugging
             return data.imageUrl;
         } catch (error) {
             console.error('Failed to generate image:', error);
@@ -899,8 +900,10 @@ body {
         generateBtn.addEventListener('click', async function() {
             const prompt = promptInput.value.trim();
             if (prompt) {
+                console.log('Generating image for prompt:', prompt); // Log the prompt
                 const imageUrl = await generateImage(prompt);
                 if (imageUrl) {
+                    console.log('Generated image URL:', imageUrl); // Log the image URL
                     resultDisplay.src = imageUrl;
                 }
             }
